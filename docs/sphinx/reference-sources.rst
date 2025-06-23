@@ -176,6 +176,8 @@ Source Definition Structure (obs_source_info)
      to have its properties shown on creation (prefers to rely on
      defaults first)
 
+   - **OBS_SOURCE_REQUIRES_CANVAS** - Source type requires a canvas.
+
 .. member:: const char *(*obs_source_info.get_name)(void *type_data)
 
    Get the translated name of the source type.
@@ -649,9 +651,19 @@ The following signals are defined for every source type:
 
    Called when the audio mixers have changed.
 
+**audio_activate** (ptr source)
+
+   Called when the source's audio becomes active.
+
+**audio_deactivate** (ptr source)
+
+   Called when the source's audio becomes inactive.
+
 **filter_add** (ptr source, ptr filter)
 
    Called when a filter has been added to the source.
+
+   .. versionadded:: 30.0
 
 **filter_remove** (ptr source, ptr filter)
 
@@ -708,8 +720,6 @@ The following signals are defined for every source type:
 
 Source-specific Signals
 -----------------------
-
-The following signals are defined for specific sources only:
 
 **slide_changed** (int index, string path)
 
@@ -904,15 +914,6 @@ General Source Functions
    :param create_private: If *true*, the new source will be a private
                           source if fully duplicated
    :return:               A new source reference
-
----------------------
-
-.. function:: void obs_source_addref(obs_source_t *source)
-
-   Adds a reference to a source.
-
-.. deprecated:: 27.2.0
-   Use :c:func:`obs_source_get_ref()` instead.
 
 ---------------------
 
@@ -1209,6 +1210,13 @@ General Source Functions
 
 ---------------------
 
+.. function:: void obs_source_set_audio_active(obs_source_t *source, bool active)
+              bool obs_source_audio_active(const obs_source_t *source)
+
+   Sets/gets the audio active status (controls whether the source is shown in the mixer).
+
+---------------------
+
 .. function:: void obs_source_enum_active_sources(obs_source_t *source, obs_source_enum_proc_t enum_callback, void *param)
               void obs_source_enum_active_tree(obs_source_t *source, obs_source_enum_proc_t enum_callback, void *param)
 
@@ -1494,6 +1502,11 @@ General Source Functions
 
 ---------------------
 
+.. function:: obs_canvas_t *obs_source_get_canvas(const obs_source_t *source)
+
+   Get canvas this source belongs to (reference incremented)
+
+---------------------
 
 Functions used by sources
 -------------------------
